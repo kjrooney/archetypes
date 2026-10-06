@@ -609,6 +609,10 @@
                     <h3>Question ${index + 1} of ${questions.length}</h3>
                     <p style="margin-bottom: 20px; color: #333;">${q.question}</p>
                     ${optionsHTML}
+                    <div class="button-group">
+                        <button class="btn-back" onclick="prevQuestion()" ${index === 0 ? 'style="visibility: hidden;"' : ''}>Back</button>
+                        <button class="btn-next" onclick="nextQuestion()">Next</button>
+                    </div>
                 `;
 
                 container.appendChild(questionDiv);
