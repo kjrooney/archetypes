@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's Your AI Archetype? | Execute AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            color: #1a1a1a;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: #e0e0e0;
+            border-radius: 2px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .email-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .email-section.active {
+            display: block;
+        }
+
+        .email-section label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .email-section input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s;
+            margin-bottom: 12px;
+        }
+
+        .email-section input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .questions-container {
+            display: none;
+        }
+
+        .questions-container.active {
+            display: block;
+        }
+
+        .question {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .question.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .question h3 {
+            font-size: 18px;
+            color: #1a1a1a;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            display: flex;
+            align-items: flex-start;
+            padding: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f9f9ff;
+        }
+
+        .option input[type="radio"] {
+            margin-top: 2px;
+            margin-right: 12px;
+            cursor: pointer;
+            accent-color: #667eea;
+            width: 18px;
+            height: 18px;
+            min-width: 18px;
+        }
+
+        .option label {
+            cursor: pointer;
+            flex: 1;
+            font-size: 15px;
+            color: #333;
+            margin: 0;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-next {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-next:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-next:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-back {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-back:hover {
+            background: #d0d0d0;
+        }
+
+        .results {
+            display: none;
+            animation: slideUp 0.4s ease;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card {
+            text-align: center;
+            padding: 30px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            color: white;
+            font-weight: 600;
+        }
+
+        .result-card.centaur {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .result-card.cyborg {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .result-card.automator {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+
+        .archetype-name {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .archetype-subtitle {
+            font-size: 16px;
+            opacity: 0.95;
+            margin-bottom: 20px;
+        }
+
+        .result-breakdown {
+            background: white;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            text-align: left;
+            color: #333;
+        }
+
+        .result-breakdown h4 {
+            color: #1a1a1a;
+            font-size: 16px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        .result-breakdown p {
+            font-size: 14px;
+            line-height: 1.6;
+            color: #666;
+            margin-bottom: 12px;
+        }
+
+        .result-breakdown p:last-child {
+            margin-bottom: 0;
+        }
+
+        .result-breakdown ul {
+            list-style: none;
+            margin: 12px 0;
+        }
+
+        .result-breakdown li {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .result-breakdown li:before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: #667eea;
+        }
+
+        .submit-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 14px 24px;
+            font-size: 16px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-retake {
+            background: #e0e0e0;
+            color: #333;
+            padding: 12px 24px;
+            font-size: 15px;
+        }
+
+        .btn-retake:hover {
+            background: #d0d0d0;
+        }
+
+        .disclaimer {
+            font-size: 12px;
+            color: #999;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .loading.active {
+            display: block;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            color: #e74c3c;
+            font-size: 14px;
+            margin-top: 12px;
+            padding: 12px;
+            background: #fadbd8;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .error.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" id="headerSection">
+            <h1>What's Your AI Archetype?</h1>
+            <p>Discover how you're really using AI—and whether you're building expertise or losing it.</p>
+            <button class="btn-next" onclick="startQuiz()" style="margin-top: 24px;">Start Assessment</button>
+        </div>
+
+        <div class="progress-bar" id="progressBar" style="display: none;">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <!-- Email Section (shown at end) -->
+        <div class="email-section" id="emailSection">
+            <label for="email">Enter your email to receive your full results and personalized recommendations:</label>
+            <input type="email" id="email" placeholder="you@example.com" required>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn-submit" onclick="submitResults()" style="flex: 1;">Send My Results</button>
+                <button class="btn-retake" onclick="cancelEmailForm()" style="flex: 1;">Cancel</button>
+            </div>
+            <div class="error" id="emailError"></div>
+        </div>
+
+        <!-- Questions -->
+        <div class="questions-container" id="questionsContainer"></div>
+
+        <!-- Results -->
+        <div class="results" id="results">
+            <div class="result-card" id="resultCard">
+                <div class="archetype-name" id="archetypeName"></div>
+                <div class="archetype-subtitle" id="archetypeSubtitle"></div>
+            </div>
+
+            <div class="result-breakdown" id="resultBreakdown"></div>
+
+            <div class="submit-group" id="submitGroup">
+                <button class="btn-submit" onclick="showEmailForm()">Get My Full Results Emailed</button>
+                <button class="btn-retake" onclick="retakeQuiz()">Retake Assessment</button>
+            </div>
+
+            <p class="disclaimer">Based on research from Kellogg (MIT), Mollick (Wharton), & Lakhani (Harvard)</p>
+        </div>
+
+        <!-- Loading -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Sending your results...</p>
+        </div>
+
+        <div class="error" id="submitError"></div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "When you ask AI to analyze a problem, what do you do first?",
+                options: [
+                    { text: "Define the problem myself, then give AI specific sub-tasks to handle", archetype: "centaur", weight: 3 },
+                    { text: "Ask AI to analyze it, then refine the prompt based on what I see", archetype: "cyborg", weight: 3 },
+                    { text: "Ask AI and accept the result with minimal review", archetype: "automator", weight: 3 }
+                ]
+            },
+            {
+                question: "How do you typically evaluate AI-generated strategic recommendations?",
+                options: [
+                    { text: "I verify the underlying logic, check for confounding variables, and make my own assessment before deciding", archetype: "centaur", weight: 3 },
+                    { text: "I iterate with the AI—asking follow-up questions and refining the recommendation in real-time", archetype: "cyborg", weight: 3 },
+                    { text: "It looks credible, so I trust it and move forward", archetype: "automator", weight: 3 }
+                ]
+            },
+            {
+                question: "When AI produces an output that looks polished, what's your next step?",
+                options: [
+                    { text: "Check if it's actually correct by examining the data and logic independently", archetype: "centaur", weight: 3 },
+                    { text: "Test it by pushing back on the AI's reasoning and seeing if it holds up", archetype: "cyborg", weight: 3 },
+                    { text: "Use it—it's already well-written and professional-looking", archetype: "automator", weight: 3 }
+                ]
+            },
+            {
+                question: "How much of the critical thinking do you do vs. the AI doing it for you?",
+                options: [
+                    { text: "I handle all strategic thinking and evaluation; AI handles modular execution tasks", archetype: "centaur", weight: 3 },
+                    { text: "We split it 50/50 in real-time—I'm constantly refining the AI's thinking with my input", archetype: "cyborg", weight: 3 },
+                    { text: "I let AI do most of it and spot-check at the end", archetype: "automator", weight: 3 }
+                ]
+            },
+            {
+                question: "After completing a task with AI, do you feel like you learned something new about your domain?",
+                options: [
+                    { text: "Yes, because I stayed deeply engaged in the thinking throughout", archetype: "centaur", weight: 3 },
+                    { text: "Yes, especially about how to prompt better and synthesize information faster", archetype: "cyborg", weight: 3 },
+                    { text: "Not really—I got the output done, but I didn't develop new expertise", archetype: "automator", weight: 3 }
+                ]
+            },
+            {
+                question: "What happens when AI confidently gives you an answer that turns out to be wrong?",
+                options: [
+                    { text: "I catch it during verification because I understand the domain deeply enough to spot errors", archetype: "centaur", weight: 3 },
+                    { text: "I sometimes catch it during iteration, or I verify specific claims it makes", archetype: "cyborg", weight: 3 },
+                    { text: "I don't always catch it until after I've already used or shared it", archetype: "automator", weight: 3 }
+                ]
+            },
+            {
+                question: "How do you decide what AI should and shouldn't do in your workflow?",
+                options: [
+                    { text: "I deliberately reserve high-stakes decisions and strategic framing for myself", archetype: "centaur", weight: 3 },
+                    { text: "I test different combinations and refine based on what produces better outputs", archetype: "cyborg", weight: 3 },
+                    { text: "I use AI for as much as possible to save time", archetype: "automator", weight: 3 }
+                ]
+            },
+            {
+                question: "When working on a high-stakes project, how much does AI contribute to the final decision?",
+                options: [
+                    { text: "AI provides analysis; I make the final decision independently", archetype: "centaur", weight: 3 },
+                    { text: "AI and I work together to shape the decision—lots of back-and-forth", archetype: "cyborg", weight: 3 },
+                    { text: "AI essentially makes the decision; I just approve it", archetype: "automator", weight: 3 }
+                ]
+            },
+            {
+                question: "How do you handle AI outputs that sound confident but might be hallucinating?",
+                options: [
+                    { text: "I verify facts independently before using them", archetype: "centaur", weight: 3 },
+                    { text: "I question the AI's reasoning in real-time until I'm confident", archetype: "cyborg", weight: 3 },
+                    { text: "If it sounds authoritative, I assume it's correct", archetype: "automator", weight: 3 }
+                ]
+            },
+            {
+                question: "Do you feel your expertise in your domain has grown, stayed the same, or declined since using AI regularly?",
+                options: [
+                    { text: "Grown—I'm engaging with deeper thinking and verification", archetype: "centaur", weight: 3 },
+                    { text: "Evolved in different ways—I'm getting faster at synthesis and prompting", archetype: "cyborg", weight: 3 },
+                    { text: "Declined—I'm relying on AI for thinking I used to do myself", archetype: "automator", weight: 3 }
+                ]
+            },
+            {
+                question: "When you see AI produce something, what's your instinct?",
+                options: [
+                    { text: "Healthy skepticism—I need to verify it before trusting it", archetype: "centaur", weight: 3 },
+                    { text: "Curiosity—I want to explore it further and refine it", archetype: "cyborg", weight: 3 },
+                    { text: "Acceptance—it's usually good enough to use", archetype: "automator", weight: 3 }
+                ]
+            },
+            {
+                question: "What does success with AI look like for you?",
+                options: [
+                    { text: "I maintain my expertise while working faster on routine tasks", archetype: "centaur", weight: 3 },
+                    { text: "I develop stronger synthesis and communication skills while gaining speed", archetype: "cyborg", weight: 3 },
+                    { text: "I get tasks done as quickly as possible with minimal effort", archetype: "automator", weight: 3 }
+                ]
+            }
+        ];
+
+        const archetypeDescriptions = {
+            centaur: {
+                name: "The Centaur",
+                subtitle: "Strategic Control",
+                description: "You maintain strict cognitive engagement at all critical gates. You use AI for modular sub-tasks while reserving strategic thinking, evaluation, and final decisions for yourself.",
+                results: [
+                    "<strong>Your Strength:</strong> You're building expertise while working faster. You catch hallucinations because you stay engaged with the thinking.",
+                    "<strong>Your Edge:</strong> Highest analytical accuracy. You're not just productive—you're getting smarter.",
+                    "<strong>What to Lean Into:</strong> Keep this workflow disciplined. Your boundary between human decision-making and AI execution is your competitive advantage."
+                ]
+            },
+            cyborg: {
+                name: "The Cyborg",
+                subtitle: "Real-Time Co-Creation",
+                description: "You work in a fast feedback loop with AI, constantly refining prompts, editing outputs, and using the model as an interactive thought partner.",
+                results: [
+                    "<strong>Your Strength:</strong> You're developing exceptional prompt calibration and synthesis skills. Your outputs are polished and compelling.",
+                    "<strong>Your Edge:</strong> You're faster than Centaurs and your work is highly persuasive. You're building expertise in a different dimension.",
+                    "<strong>What to Lean Into:</strong> You're on a good path. Watch for subtle automation bias—sometimes the AI's framing sounds right but isn't. Occasionally step back and verify independently."
+                ]
+            },
+            automator: {
+                name: "The Self-Automator",
+                subtitle: "Abdicated Thinking",
+                description: "You offload most thinking to AI and accept outputs with minimal review. It feels efficient, but it's eroding your expertise.",
+                results: [
+                    "<strong>Your Risk:</strong> Zero skill gains. You're losing the cognitive feedback loops that build expertise. When AI gets it wrong, you might not catch it.",
+                    "<strong>The Real Cost:</strong> Short-term speed, long-term irrelevance. Your domain knowledge is atrophying.",
+                    "<strong>What to Change:</strong> Start verifying. Ask 'why' when AI recommends something. Define problems yourself before handing them to AI. Your expertise is worth preserving."
+                ]
+            }
+        };
+
+        let currentQuestion = 0;
+        let userEmail = "";
+        let scores = { centaur: 0, cyborg: 0, automator: 0 };
+        let userResponses = [];
+
+        function initQuiz() {
+            renderQuestions();
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question';
+                if (index === 0) questionDiv.classList.add('active');
+                questionDiv.id = `question-${index}`;
+
+                let optionsHTML = '<div class="options">';
+                q.options.forEach((opt, optIndex) => {
+                    optionsHTML += `
+                        <div class="option" onclick="selectOption(${index}, ${optIndex}, '${opt.archetype}', ${opt.weight})">
+                            <input type="radio" name="question-${index}" id="opt-${index}-${optIndex}" value="${optIndex}">
+                            <label for="opt-${index}-${optIndex}">${opt.text}</label>
+                        </div>
+                    `;
+                });
+                optionsHTML += '</div>';
+
+                questionDiv.innerHTML = `
+                    <h3>Question ${index + 1} of ${questions.length}</h3>
+                    <p style="margin-bottom: 20px; color: #333;">${q.question}</p>
+                    ${optionsHTML}
+                `;
+
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function startQuiz() {
+            document.getElementById('headerSection').style.display = 'none';
+            document.getElementById('progressBar').style.display = 'block';
+            document.getElementById('questionsContainer').classList.add('active');
+            currentQuestion = 0;
+            showQuestion(0);
+        }
+
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function showQuestion(index) {
+            document.querySelectorAll('.question').forEach(q => q.classList.remove('active'));
+            document.getElementById(`question-${index}`).classList.add('active');
+
+            const progress = ((index + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function selectOption(questionIndex, optionIndex, archetype, weight) {
+            const option = document.querySelector(`#opt-${questionIndex}-${optionIndex}`);
+            option.checked = true;
+
+            document.querySelectorAll(`[name="question-${questionIndex}"]`).forEach(opt => {
+                opt.parentElement.classList.remove('selected');
+            });
+            option.parentElement.classList.add('selected');
+
+            userResponses[questionIndex] = { optionIndex, archetype, weight };
+            scores[archetype] += weight;
+        }
+
+        function nextQuestion() {
+            if (!userResponses[currentQuestion]) {
+                alert('Please select an answer before continuing.');
+                return;
+            }
+
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            } else {
+                showResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        function showResults() {
+            document.getElementById('questionsContainer').classList.remove('active');
+            document.getElementById('progressBar').style.display = 'none';
+            document.getElementById('results').classList.add('active');
+
+            const winningArchetype = Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+            const description = archetypeDescriptions[winningArchetype];
+
+            document.getElementById('resultCard').className = `result-card ${winningArchetype}`;
+            document.getElementById('archetypeName').textContent = description.name;
+            document.getElementById('archetypeSubtitle').textContent = description.subtitle;
+
+            let breakdownHTML = `
+                <h4>${description.description}</h4>
+                ${description.results.map(r => `<p>${r}</p>`).join('')}
+            `;
+
+            document.getElementById('resultBreakdown').innerHTML = breakdownHTML;
+
+            // Scroll to results
+            window.scrollTo(0, document.getElementById('results').offsetTop - 60);
+        }
+
+        function showEmailForm() {
+            document.getElementById('submitGroup').style.display = 'none';
+            document.getElementById('emailSection').classList.add('active');
+            document.getElementById('email').focus();
+        }
+
+        function cancelEmailForm() {
+            document.getElementById('emailSection').classList.remove('active');
+            document.getElementById('submitGroup').style.display = 'flex';
+            document.getElementById('emailError').classList.remove('active');
+        }
+
+        function submitResults() {
+            const emailInput = document.getElementById('email');
+            const emailError = document.getElementById('emailError');
+
+            if (!emailInput.value) {
+                emailError.textContent = 'Please enter your email address.';
+                emailError.classList.add('active');
+                return;
+            }
+
+            if (!isValidEmail(emailInput.value)) {
+                emailError.textContent = 'Please enter a valid email address.';
+                emailError.classList.add('active');
+                return;
+            }
+
+            userEmail = emailInput.value;
+            emailError.classList.remove('active');
+
+            const formData = new FormData();
+            formData.append('email', userEmail);
+            formData.append('archetype', getWinningArchetype());
+            formData.append('scores', JSON.stringify(scores));
+            formData.append('quiz', 'ai-archetype');
+
+            document.getElementById('loading').classList.add('active');
+            document.getElementById('emailSection').classList.remove('active');
+            document.getElementById('submitError').classList.remove('active');
+
+            fetch('https://formspree.io/f/mwlkkgnz', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                document.getElementById('loading').classList.remove('active');
+                if (response.ok) {
+                    document.getElementById('results').classList.remove('active');
+                    showSuccessMessage();
+                } else {
+                    throw new Error('Form submission failed');
+                }
+            })
+            .catch(error => {
+                document.getElementById('loading').classList.remove('active');
+                document.getElementById('emailSection').classList.add('active');
+                const errorEl = document.getElementById('submitError');
+                errorEl.textContent = 'Error sending results. Please try again.';
+                errorEl.classList.add('active');
+            });
+        }
+
+        function showSuccessMessage() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = `
+                <div style="text-align: center; padding: 40px 20px;">
+                    <div style="font-size: 48px; margin-bottom: 16px;">✓</div>
+                    <h2 style="font-size: 24px; color: #1a1a1a; margin-bottom: 12px;">Results Sent!</h2>
+                    <p style="font-size: 16px; color: #666; margin-bottom: 24px;">Check <strong>${userEmail}</strong> for your full results and personalized recommendations.</p>
+                    <button class="btn-retake" onclick="retakeQuiz()" style="width: 200px;">Retake Assessment</button>
+                </div>
+            `;
+            resultsDiv.classList.add('active');
+        }
+
+        function getWinningArchetype() {
+            return Object.keys(scores).reduce((a, b) => scores[a] > scores[b] ? a : b);
+        }
+
+        function retakeQuiz() {
+            // Reset state
+            currentQuestion = 0;
+            userEmail = "";
+            scores = { centaur: 0, cyborg: 0, automator: 0 };
+            userResponses = [];
+
+            // Reset UI
+            document.getElementById('headerSection').style.display = 'block';
+            document.getElementById('progressBar').style.display = 'none';
+            document.getElementById('questionsContainer').classList.remove('active');
+            document.getElementById('results').classList.remove('active');
+            document.getElementById('results').innerHTML = `
+                <div class="result-card" id="resultCard">
+                    <div class="archetype-name" id="archetypeName"></div>
+                    <div class="archetype-subtitle" id="archetypeSubtitle"></div>
+                </div>
+
+                <div class="result-breakdown" id="resultBreakdown"></div>
+
+                <div class="submit-group" id="submitGroup">
+                    <button class="btn-submit" onclick="showEmailForm()">Get My Full Results Emailed</button>
+                    <button class="btn-retake" onclick="retakeQuiz()">Retake Assessment</button>
+                </div>
+
+                <p class="disclaimer">Based on research from Kellogg (MIT), Mollick (Wharton), & Lakhani (Harvard)</p>
+            `;
+            document.getElementById('emailSection').classList.remove('active');
+            document.getElementById('email').value = '';
+            document.getElementById('emailError').classList.remove('active');
+            document.getElementById('submitError').classList.remove('active');
+
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+
+        // Render button navigation
+        function updateButtonVisibility() {
+            const questionsActive = document.getElementById('questionsContainer').classList.contains('active');
+            if (questionsActive) {
+                document.querySelectorAll('.button-group').forEach(g => g.remove());
+
+                const buttonGroup = document.createElement('div');
+                buttonGroup.className = 'button-group';
+
+                if (currentQuestion > 0) {
+                    const backBtn = document.createElement('button');
+                    backBtn.className = 'btn-back';
+                    backBtn.textContent = '← Back';
+                    backBtn.onclick = prevQuestion;
+                    buttonGroup.appendChild(backBtn);
+                }
+
+                const nextBtn = document.createElement('button');
+                nextBtn.className = 'btn-next';
+                nextBtn.textContent = currentQuestion === questions.length - 1 ? 'See Results' : 'Next →';
+                nextBtn.onclick = nextQuestion;
+                buttonGroup.appendChild(nextBtn);
+
+                document.getElementById('questionsContainer').appendChild(buttonGroup);
+            }
+        }
+
+        // Initial setup
+        initQuiz();
+        updateButtonVisibility();
+
+        // Update buttons when advancing
+        const originalNextQuestion = nextQuestion;
+        nextQuestion = function() {
+            if (!userResponses[currentQuestion]) {
+                alert('Please select an answer before continuing.');
+                return;
+            }
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+                updateButtonVisibility();
+            } else {
+                showResults();
+            }
+        };
+
+        const originalPrevQuestion = prevQuestion;
+        prevQuestion = function() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+                updateButtonVisibility();
+            }
+        };
+    </script>
+</body>
+</html>
